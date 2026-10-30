@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+mise run local-down
+mise run local-up
+cd frontend
+npm run dev
+cd ..

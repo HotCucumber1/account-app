@@ -1,0 +1,33 @@
+services:
+  notification-service:
+    image: distributed-programming-notification:local
+    build:
+      context: ./modules/notification
+      dockerfile: Dockerfile
+    environment:
+      NOTIFICATION_MYSQL_ADDRESS: mysql:3306
+      NOTIFICATION_AMQP_URL: amqp://local:local@rabbitmq:5672/
+    ports:
+      - "${NOTIFICATION_GRPC_PORT:-8081}:8081"
+      - "${NOTIFICATION_HTTP_PORT:-8082}:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  notification-message-handler:
+    image: distributed-programming-notification:local
+    command: [message-handler]
+    environment:
+      NOTIFICATION_MYSQL_ADDRESS: mysql:3306
+      NOTIFICATION_AMQP_URL: amqp://local:local@rabbitmq:5672/
+    ports:
+      - "${NOTIFICATION_MESSAGE_HANDLER_PORT:-8083}:8082"
+    depends_on:
+      notification-service:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy

@@ -1,0 +1,13 @@
+go 1.27.1
+
+use (
+	./modules/access
+	./modules/account
+	./modules/audit
+	./modules/auth
+	./modules/billing
+	./modules/notification
+	./modules/session
+	./modules/storage
+	lib
+)

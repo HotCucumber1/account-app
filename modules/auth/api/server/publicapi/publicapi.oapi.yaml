@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Auth service public API
+  x-api-identifier: authpublicapi
+paths:
+  /api/public/v1/auth/register:
+    post:
+      operationId: Register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+              required:
+                - email
+                - password
+                - name
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accountID:
+                    type: string
+                    format: uuid
+                required:
+                  - accountID
+        "400":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
+
+  /api/public/v1/auth/login:
+    post:
+      operationId: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+      responses:
+        "200":
+          $ref: "#/components/responses/Tokens"
+        "401":
+          $ref: "#/components/responses/Error"
+
+  /api/public/v1/auth/logout:
+    post:
+      operationId: Logout
+      parameters:
+        - $ref: "#/components/parameters/AccountID"
+        - $ref: "#/components/parameters/SessionID"
+      responses:
+        "204":
+          description: Logged out
+        "401":
+          $ref: "#/components/responses/Error"
+
+  /api/public/v1/auth/password/change:
+    post:
+      operationId: ChangePassword
+      parameters:
+        - $ref: "#/components/parameters/AccountID"
+        - $ref: "#/components/parameters/SessionID"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                oldPassword:
+                  type: string
+                newPassword:
+                  type: string
+              required:
+                - oldPassword
+                - newPassword
+      responses:
+        "204":
+          description: Password changed; other sessions are revoked
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+
+components:
+  parameters:
+    AccountID:
+      name: X-Account-ID
+      in: header
+      required: true
+      description: Authenticated account, set by the API gateway
+      schema:
+        type: string
+        format: uuid
+    SessionID:
+      name: X-Session-ID
+      in: header
+      required: true
+      description: Current session, set by the API gateway
+      schema:
+        type: string
+        format: uuid
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - message
+    Tokens:
+      description: Issued tokens
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Tokens"
+  schemas:
+    Credentials:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+    Tokens:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        accessTokenExpiresAt:
+          type: string
+          format: date-time
+        refreshToken:
+          type: string
+        refreshTokenExpiresAt:
+          type: string
+          format: date-time
+        accountID:
+          type: string
+          format: uuid
+        sessionID:
+          type: string
+          format: uuid
+      required:
+        - accessToken
+        - accessTokenExpiresAt
+        - refreshToken
+        - refreshTokenExpiresAt
+        - accountID
+        - sessionID

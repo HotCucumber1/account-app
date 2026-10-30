@@ -1,0 +1,70 @@
+syntax = "proto3";
+package sessionInternalAPI;
+
+option go_package = "/.;sessioninternalapi";
+
+import "google/protobuf/timestamp.proto";
+
+service SessionService {
+  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse);
+  rpc GetSession(GetSessionRequest) returns (Session);
+  rpc ValidateSession(ValidateSessionRequest) returns (ValidateSessionResponse);
+  rpc KillSession(KillSessionRequest) returns (KillSessionResponse);
+  rpc KillAccountSessions(KillAccountSessionsRequest) returns (KillAccountSessionsResponse);
+}
+
+message Session {
+  string ID = 1;
+  string AccountID = 2;
+  string DeviceID = 3;
+  string UserAgent = 4;
+  string IPAddress = 5;
+  string Status = 6;
+  google.protobuf.Timestamp CreatedAt = 7;
+  google.protobuf.Timestamp ExpiresAt = 8;
+  string RevokeReason = 9;
+}
+
+message CreateSessionRequest {
+  string AccountID = 1;
+  string UserAgent = 2;
+  string IPAddress = 3;
+}
+
+message CreateSessionResponse {
+  string SessionID = 1;
+  string RefreshToken = 2;
+  google.protobuf.Timestamp ExpiresAt = 3;
+  bool NewDevice = 4;
+}
+
+message GetSessionRequest {
+  string SessionID = 1;
+}
+
+message ValidateSessionRequest {
+  string SessionID = 1;
+}
+
+message ValidateSessionResponse {
+  bool Valid = 1;
+  string AccountID = 2;
+  google.protobuf.Timestamp ExpiresAt = 3;
+}
+
+message KillSessionRequest {
+  string SessionID = 1;
+  string Reason = 2;
+}
+
+message KillSessionResponse {}
+
+message KillAccountSessionsRequest {
+  string AccountID = 1;
+  string ExceptSessionID = 2;
+  string Reason = 3;
+}
+
+message KillAccountSessionsResponse {
+  int64 Killed = 1;
+}

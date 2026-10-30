@@ -1,0 +1,45 @@
+services:
+  gateway:
+    image: ghcr.io/distributed-programming-2026/gateway:v0.0.1
+    platform: linux/amd64
+    environment:
+      LOCAL_GATEWAY_CONFIG_HASH: ${LOCAL_GATEWAY_CONFIG_HASH:-}
+    ports:
+      - "${LOCAL_GATEWAY_PORT:-80}:80"
+      - "${LOCAL_GATEWAY_HEALTH_PORT:-15000}:15000"
+    volumes:
+      - ./dist/local/gateway:/config:ro
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: local-root
+    ports:
+      - "${LOCAL_MYSQL_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--protocol=tcp", "-h", "127.0.0.1"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  rabbitmq:
+    image: rabbitmq:4.1-management
+    environment:
+      RABBITMQ_DEFAULT_USER: local
+      RABBITMQ_DEFAULT_PASS: local
+    ports:
+      - "${LOCAL_AMQP_PORT:-5672}:5672"
+      - "${LOCAL_AMQP_MANAGEMENT_PORT:-15672}:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  mysql-data:
+  rabbitmq-data:

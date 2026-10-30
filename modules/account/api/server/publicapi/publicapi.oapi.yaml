@@ -1,0 +1,93 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Account service public API
+  x-api-identifier: accountpublicapi
+paths:
+  /api/public/v1/accounts/me:
+    parameters:
+      - $ref: "#/components/parameters/AccountID"
+    get:
+      operationId: GetMyAccount
+      responses:
+        "200":
+          $ref: "#/components/responses/Account"
+        "404":
+          description: Account not found
+    patch:
+      operationId: UpdateMyAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountUpdate"
+      responses:
+        "200":
+          $ref: "#/components/responses/Account"
+        "400":
+          $ref: "#/components/responses/Error"
+        "404":
+          description: Account not found
+
+components:
+  parameters:
+    AccountID:
+      name: X-Account-ID
+      in: header
+      required: true
+      description: Authenticated account, set by the API gateway
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    Error:
+      description: Error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+            required:
+              - code
+              - message
+    Account:
+      description: Account
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Account"
+
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - email
+        - name
+        - createdAt
+
+    AccountUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+      required:
+        - name

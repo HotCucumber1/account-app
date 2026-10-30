@@ -1,0 +1,33 @@
+services:
+  billing-service:
+    image: distributed-programming-billing:local
+    build:
+      context: ./modules/billing
+      dockerfile: Dockerfile
+    environment:
+      BILLING_MYSQL_ADDRESS: mysql:3306
+      BILLING_AMQP_URL: amqp://local:local@rabbitmq:5672/
+    ports:
+      - "${BILLING_GRPC_PORT:-8081}:8081"
+      - "${BILLING_HTTP_PORT:-8082}:8082"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  billing-message-handler:
+    image: distributed-programming-billing:local
+    command: [message-handler]
+    environment:
+      BILLING_MYSQL_ADDRESS: mysql:3306
+      BILLING_AMQP_URL: amqp://local:local@rabbitmq:5672/
+    ports:
+      - "${BILLING_MESSAGE_HANDLER_PORT:-8083}:8082"
+    depends_on:
+      billing-service:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy

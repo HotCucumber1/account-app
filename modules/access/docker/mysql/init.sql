@@ -1,0 +1,3 @@
+CREATE DATABASE IF NOT EXISTS `access` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER IF NOT EXISTS 'access'@'%' IDENTIFIED BY 'access';
+GRANT ALL PRIVILEGES ON `access`.* TO 'access'@'%';

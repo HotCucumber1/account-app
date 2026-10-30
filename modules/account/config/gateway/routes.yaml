@@ -1,0 +1,12 @@
+kind: gateway/service/v1
+name: account
+weight: 100
+routes:
+  - pattern: '^/account/api/public/v1/accounts/me$'
+    rewrite:
+      old: '^/account/(.*)$'
+      new: '/$1'
+    target: account-service:8082
+    allowedMethods: [ GET, PATCH ]
+    interceptors:
+      - id: auth-interceptor

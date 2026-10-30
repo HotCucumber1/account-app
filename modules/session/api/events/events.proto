@@ -1,0 +1,18 @@
+syntax = "proto3";
+package sessionEvents;
+
+option go_package = "/.;sessionevents";
+
+message SessionCreated {
+  string SessionID = 1;
+  string AccountID = 2;
+  string DeviceID = 3;
+  string IPAddress = 4;
+  bool NewDevice = 5;
+}
+
+message SessionClosed {
+  string SessionID = 1;
+  string AccountID = 2;
+  string Reason = 3;
+}

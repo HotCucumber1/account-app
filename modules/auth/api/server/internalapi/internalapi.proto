@@ -1,0 +1,66 @@
+syntax = "proto3";
+package authInternalAPI;
+
+option go_package = "/.;authinternalapi";
+
+import "google/protobuf/timestamp.proto";
+
+service AuthService {
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+  rpc Authenticate(AuthenticateRequest) returns (Tokens);
+  rpc RevokeToken(RevokeTokenRequest) returns (RevokeTokenResponse);
+  rpc ValidateToken(ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
+}
+
+message Tokens {
+  string AccessToken = 1;
+  google.protobuf.Timestamp AccessTokenExpiresAt = 2;
+  string RefreshToken = 3;
+  google.protobuf.Timestamp RefreshTokenExpiresAt = 4;
+  string AccountID = 5;
+  string SessionID = 6;
+}
+
+message RegisterRequest {
+  string Email = 1;
+  string Password = 2;
+  string Name = 3;
+}
+
+message RegisterResponse {
+  string AccountID = 1;
+}
+
+message AuthenticateRequest {
+  string Email = 1;
+  string Password = 2;
+  string UserAgent = 3;
+  string IPAddress = 4;
+}
+
+message RevokeTokenRequest {
+  string AccountID = 1;
+  string SessionID = 2;
+}
+
+message RevokeTokenResponse {}
+
+message ValidateTokenRequest {
+  string AccessToken = 1;
+}
+
+message ValidateTokenResponse {
+  string AccountID = 1;
+  string SessionID = 2;
+  google.protobuf.Timestamp ExpiresAt = 3;
+}
+
+message ChangePasswordRequest {
+  string AccountID = 1;
+  string SessionID = 2;
+  string OldPassword = 3;
+  string NewPassword = 4;
+}
+
+message ChangePasswordResponse {}

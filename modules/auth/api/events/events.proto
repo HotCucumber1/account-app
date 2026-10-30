@@ -1,0 +1,33 @@
+syntax = "proto3";
+package authEvents;
+
+option go_package = "/.;authevents";
+
+message UserRegistered {
+  string AccountID = 1;
+}
+
+message UserLoggedIn {
+  string AccountID = 1;
+  string SessionID = 2;
+  string IPAddress = 3;
+  string UserAgent = 4;
+  bool NewDevice = 5;
+}
+
+message UserLoginFailed {
+  string Email = 1;
+  string AccountID = 2;
+  string IPAddress = 3;
+  string Reason = 4;
+}
+
+message UserLoggedOut {
+  string AccountID = 1;
+  string SessionID = 2;
+}
+
+message PasswordChanged {
+  string AccountID = 1;
+  string SessionID = 2;
+}

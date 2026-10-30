@@ -1,0 +1,36 @@
+syntax = "proto3";
+package accountInternalAPI;
+
+option go_package = "/.;accountinternalapi";
+
+import "google/protobuf/timestamp.proto";
+
+service AccountService {
+  rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
+  rpc GetAccountInfo(GetAccountInfoRequest) returns (AccountInfo);
+  rpc FindAccountByEmail(FindAccountByEmailRequest) returns (AccountInfo);
+}
+
+message AccountInfo {
+  string ID = 1;
+  string Email = 2;
+  string Name = 3;
+  google.protobuf.Timestamp CreatedAt = 4;
+}
+
+message CreateAccountRequest {
+  string Email = 1;
+  string Name = 2;
+}
+
+message CreateAccountResponse {
+  string AccountID = 1;
+}
+
+message GetAccountInfoRequest {
+  string AccountID = 1;
+}
+
+message FindAccountByEmailRequest {
+  string Email = 1;
+}

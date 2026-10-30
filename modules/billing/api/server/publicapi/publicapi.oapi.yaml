@@ -1,0 +1,38 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Billing service public API
+  x-api-identifier: billingpublicapi
+paths:
+  /api/public/v1/echo:
+    post:
+      operationId: Echo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EchoRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EchoResponseData"
+components:
+  schemas:
+    EchoRequest:
+      type: object
+      properties:
+        body:
+          type: string
+      required:
+        - body
+    EchoResponseData:
+      type: object
+      properties:
+        operationID:
+          type: string
+      required:
+        - operationID

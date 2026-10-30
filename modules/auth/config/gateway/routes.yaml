@@ -1,0 +1,19 @@
+kind: gateway/service/v1
+name: auth
+weight: 100
+routes:
+  - pattern: '^/auth/api/public/v1/auth/(register|login)$'
+    rewrite:
+      old: '^/auth/(.*)$'
+      new: '/$1'
+    target: auth-service:8082
+    allowedMethods: [ POST ]
+
+  - pattern: '^/auth/api/public/v1/auth/(logout|password/change)$'
+    rewrite:
+      old: '^/auth/(.*)$'
+      new: '/$1'
+    target: auth-service:8082
+    allowedMethods: [ POST ]
+    interceptors:
+      - id: auth-interceptor

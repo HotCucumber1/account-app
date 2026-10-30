@@ -1,0 +1,10 @@
+syntax = "proto3";
+package accountEvents;
+
+option go_package = "/.;accountevents";
+
+message AccountCreated {
+  string AccountID = 1;
+  string Email = 2;
+  string Name = 3;
+}
