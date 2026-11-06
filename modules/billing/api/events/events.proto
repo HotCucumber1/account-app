@@ -1,9 +1,0 @@
-syntax = "proto3";
-package billingEvents;
-
-option go_package = "/.;billingevents";
-
-message Echo {
-  string ID = 1;
-  string Body = 2;
-}
