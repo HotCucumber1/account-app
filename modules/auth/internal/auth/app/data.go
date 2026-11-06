@@ -11,6 +11,14 @@ type RegisterInput struct {
 	Name     string
 }
 
+type RegistrationRequest struct {
+	TransactionID string
+	AccountID     uuid.UUID
+	Email         string
+	Name          string
+	Password      string
+}
+
 type LoginInput struct {
 	Email     string
 	Password  string

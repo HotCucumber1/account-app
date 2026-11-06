@@ -21,3 +21,10 @@ type AccountData struct {
 	Name      string
 	CreatedAt time.Time
 }
+
+type PrepareCreateAccountInput struct {
+	TransactionID string
+	AccountID     uuid.UUID
+	Email         string
+	Name          string
+}

@@ -17,6 +17,8 @@ type Env struct {
 	Session  SessionClient `envconfig:"session"`
 	Token    Token         `envconfig:"token"`
 	Password Password      `envconfig:"password"`
+
+	Registration Registration `envconfig:"registration"`
 }
 
 type App struct {
@@ -71,6 +73,13 @@ type Token struct {
 	AccessTTL time.Duration `envconfig:"access_ttl" default:"15m"`
 }
 
+type Registration struct {
+	Deadline         time.Duration `envconfig:"deadline" default:"10s"`
+	RecoveryInterval time.Duration `envconfig:"recovery_interval" default:"1s"`
+	RecoveryGrace    time.Duration `envconfig:"recovery_grace" default:"5s"`
+	RecoveryBatch    int           `envconfig:"recovery_batch" default:"100"`
+}
+
 type Password struct {
 	BcryptCost int `envconfig:"bcrypt_cost" default:"10"`
 }
@@ -96,6 +105,9 @@ func (c Env) Validate() error {
 	}
 	if c.Account.GRPCAddress == "" || c.Session.GRPCAddress == "" || c.Account.Timeout <= 0 || c.Session.Timeout <= 0 {
 		return errors.New("account and session clients must be configured")
+	}
+	if c.Registration.Deadline <= 0 || c.Registration.RecoveryInterval <= 0 || c.Registration.RecoveryGrace < 0 || c.Registration.RecoveryBatch <= 0 {
+		return errors.New("registration transaction settings must be positive")
 	}
 	if c.Token.AccessTTL <= 0 || c.Password.BcryptCost <= 0 {
 		return errors.New("token and password settings must be positive")

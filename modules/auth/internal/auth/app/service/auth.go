@@ -23,8 +23,8 @@ type TokenIssuer interface {
 	Parse(token string) (app.Claims, error)
 }
 
-type AccountService interface {
-	CreateAccount(ctx context.Context, email, name string) (uuid.UUID, error)
+type Registrar interface {
+	Register(ctx context.Context, input app.RegisterInput) (uuid.UUID, error)
 }
 
 type SessionService interface {
@@ -37,7 +37,7 @@ type AuthService struct {
 	unitOfWork      UnitOfWork
 	service         domainservice.AuthService
 	accountProvider appprovider.AccountProvider
-	accountService  AccountService
+	registrar       Registrar
 	sessionProvider appprovider.SessionProvider
 	sessionService  SessionService
 	tokenIssuer     TokenIssuer
@@ -47,7 +47,7 @@ func NewAuthService(
 	unitOfWork UnitOfWork,
 	service domainservice.AuthService,
 	accountProvider appprovider.AccountProvider,
-	accountService AccountService,
+	registrar Registrar,
 	sessionProvider appprovider.SessionProvider,
 	sessionService SessionService,
 	tokenIssuer TokenIssuer,
@@ -56,7 +56,7 @@ func NewAuthService(
 		unitOfWork:      unitOfWork,
 		service:         service,
 		accountProvider: accountProvider,
-		accountService:  accountService,
+		registrar:       registrar,
 		sessionProvider: sessionProvider,
 		sessionService:  sessionService,
 		tokenIssuer:     tokenIssuer,
@@ -75,14 +75,7 @@ func (s *AuthService) Register(ctx context.Context, input app.RegisterInput) (uu
 	if !errors.Is(err, app.ErrAccountNotFound) {
 		return uuid.Nil(), err
 	}
-	accountID, err := s.accountService.CreateAccount(ctx, input.Email, input.Name)
-	if err != nil {
-		return uuid.Nil(), err
-	}
-	err = s.unitOfWork.Execute(ctx, func(ctx context.Context) error {
-		return s.service.Register(ctx, accountID, input.Password)
-	})
-	return accountID, err
+	return s.registrar.Register(ctx, input)
 }
 
 func (s *AuthService) Login(ctx context.Context, input app.LoginInput) (app.Tokens, error) {

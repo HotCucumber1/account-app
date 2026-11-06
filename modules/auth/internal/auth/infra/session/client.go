@@ -40,7 +40,7 @@ func (c *Client) CreateSession(ctx context.Context, request app.CreateSessionReq
 		IPAddress: request.IPAddress,
 	})
 	if err != nil {
-		return app.SessionGrant{}, errors.WithStack(grpcx.TranslateError(err, errorCodes...))
+		return app.SessionGrant{}, errors.WithStack(grpcx.MapError(err, errorCodes...))
 	}
 	sessionID, err := uuid.Parse(created.SessionID)
 	if err != nil {
@@ -59,7 +59,7 @@ func (c *Client) ValidateSession(ctx context.Context, sessionID uuid.UUID) (app.
 	defer cancel()
 	validation, err := c.client.ValidateSession(ctx, &sessioninternalapi.ValidateSessionRequest{SessionID: sessionID.String()})
 	if err != nil {
-		return app.SessionValidation{}, errors.WithStack(grpcx.TranslateError(err, errorCodes...))
+		return app.SessionValidation{}, errors.WithStack(grpcx.MapError(err, errorCodes...))
 	}
 	if !validation.Valid {
 		return app.SessionValidation{}, nil
@@ -75,7 +75,7 @@ func (c *Client) RevokeSession(ctx context.Context, sessionID uuid.UUID, reason 
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 	_, err := c.client.KillSession(ctx, &sessioninternalapi.KillSessionRequest{SessionID: sessionID.String(), Reason: reason})
-	return errors.WithStack(grpcx.TranslateError(err, errorCodes...))
+	return errors.WithStack(grpcx.MapError(err, errorCodes...))
 }
 
 func (c *Client) RevokeAccountSessions(ctx context.Context, accountID, exceptSessionID uuid.UUID, reason string) error {
@@ -86,5 +86,5 @@ func (c *Client) RevokeAccountSessions(ctx context.Context, accountID, exceptSes
 		request.ExceptSessionID = exceptSessionID.String()
 	}
 	_, err := c.client.KillAccountSessions(ctx, request)
-	return errors.WithStack(grpcx.TranslateError(err, errorCodes...))
+	return errors.WithStack(grpcx.MapError(err, errorCodes...))
 }

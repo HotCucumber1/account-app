@@ -11,6 +11,7 @@ import (
 	infraevent "account/internal/account/infra/event"
 	"account/internal/account/infra/mysql/query"
 	"account/internal/account/infra/mysql/repository"
+	"account/internal/account/infra/mysql/xa"
 )
 
 type services struct {
@@ -22,7 +23,8 @@ func newServices(db *database, dispatcher event.Dispatcher) *services {
 	return &services{
 		service: appservice.NewAccountService(
 			uowx.NewUnitOfWork(db.unit),
-			domainservice.NewAccountService(repository.NewAccountRepository(db.unit), infraevent.NewDispatcher(infraevent.NewDispatcherFactory(appID, dispatcher))),
+			xa.NewBranches(db.client, appID),
+			domainservice.NewAccountService(repository.NewAccountRepository(xa.Unit(db.unit)), infraevent.NewDispatcher(infraevent.NewDispatcherFactory(appID, dispatcher))),
 		),
 		queryService: query.NewAccountQueryService(db.unit),
 	}

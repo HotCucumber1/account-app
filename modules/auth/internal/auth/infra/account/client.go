@@ -38,7 +38,7 @@ func (c *Client) FindByEmail(ctx context.Context, email string) (uuid.UUID, erro
 	defer cancel()
 	account, err := c.client.FindAccountByEmail(ctx, &accountinternalapi.FindAccountByEmailRequest{Email: email})
 	if err != nil {
-		return uuid.Nil(), errors.WithStack(grpcx.TranslateError(err, errorCodes...))
+		return uuid.Nil(), errors.WithStack(grpcx.MapError(err, errorCodes...))
 	}
 	id, err := uuid.Parse(account.ID)
 	return id, errors.WithStack(err)
@@ -49,8 +49,38 @@ func (c *Client) CreateAccount(ctx context.Context, email, name string) (uuid.UU
 	defer cancel()
 	created, err := c.client.CreateAccount(ctx, &accountinternalapi.CreateAccountRequest{Email: email, Name: name})
 	if err != nil {
-		return uuid.Nil(), errors.WithStack(grpcx.TranslateError(err, errorCodes...))
+		return uuid.Nil(), errors.WithStack(grpcx.MapError(err, errorCodes...))
 	}
 	id, err := uuid.Parse(created.AccountID)
 	return id, errors.WithStack(err)
+}
+
+func (c *Client) Name() string {
+	return "account"
+}
+
+func (c *Client) Prepare(ctx context.Context, request app.RegistrationRequest) error {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	_, err := c.client.PrepareCreateAccount(ctx, &accountinternalapi.PrepareCreateAccountRequest{
+		TransactionID: request.TransactionID,
+		AccountID:     request.AccountID.String(),
+		Email:         request.Email,
+		Name:          request.Name,
+	})
+	return errors.WithStack(grpcx.MapError(err, errorCodes...))
+}
+
+func (c *Client) Commit(ctx context.Context, transactionID string) error {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	_, err := c.client.CommitTransaction(ctx, &accountinternalapi.TransactionRequest{TransactionID: transactionID})
+	return errors.WithStack(err)
+}
+
+func (c *Client) Rollback(ctx context.Context, transactionID string) error {
+	ctx, cancel := context.WithTimeout(ctx, c.timeout)
+	defer cancel()
+	_, err := c.client.RollbackTransaction(ctx, &accountinternalapi.TransactionRequest{TransactionID: transactionID})
+	return errors.WithStack(err)
 }

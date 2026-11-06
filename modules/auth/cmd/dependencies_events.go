@@ -12,6 +12,7 @@ import (
 	domainevent "github.com/distributed-programming-2026/lib/event"
 
 	"auth/internal/auth/config"
+	"auth/internal/auth/infra/mysql/xa"
 )
 
 func newDispatcher(logger *slog.Logger, conf config.Env, db *database, connection amqp.Connection) (event.Dispatcher, *outbox.Relay, error) {
@@ -23,7 +24,7 @@ func newDispatcher(logger *slog.Logger, conf config.Env, db *database, connectio
 
 	return outbox.Decorate(
 		event.ChainDispatcher(transport, event.DispatcherLogging(logger)),
-		uow.NewLockableUnitOfWork(db.unit),
+		xa.LockableUnit(uow.NewLockableUnitOfWork(db.unit)),
 		outbox.Config{
 			Transport:   "rabbitmq",
 			BatchSize:   conf.Relay.BatchSize,

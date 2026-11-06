@@ -30,6 +30,10 @@ func NewAccountService(repository repo.AccountRepository, dispatcher EventDispat
 }
 
 func (s *AccountService) Create(ctx context.Context, email, name string) (model.Account, error) {
+	return s.CreateWithID(ctx, s.repository.NextID(), email, name)
+}
+
+func (s *AccountService) CreateWithID(ctx context.Context, id uuid.UUID, email, name string) (model.Account, error) {
 	email = normalizeEmail(email)
 	name = strings.TrimSpace(name)
 	err := s.validate(email, name)
@@ -43,7 +47,7 @@ func (s *AccountService) Create(ctx context.Context, email, name string) (model.
 	if exists {
 		return model.Account{}, errors.WithStack(domain.ErrAccountAlreadyExists)
 	}
-	account := model.NewAccount(s.repository.NextID(), email, name, time.Now().UTC())
+	account := model.NewAccount(id, email, name, time.Now().UTC())
 	err = s.repository.Store(ctx, account)
 	if err != nil {
 		return model.Account{}, err

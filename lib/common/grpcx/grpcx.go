@@ -38,7 +38,7 @@ func ErrorInterceptor(logger *slog.Logger, mapping ...ErrorCode) grpc.UnaryServe
 	}
 }
 
-func TranslateError(err error, mapping ...ErrorCode) error {
+func MapError(err error, mapping ...ErrorCode) error {
 	if err == nil {
 		return nil
 	}

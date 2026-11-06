@@ -13,6 +13,7 @@ import (
 	appquery "account/internal/account/app/query"
 	appservice "account/internal/account/app/service"
 	"account/internal/account/domain"
+	"account/internal/account/infra/mysql/xa"
 )
 
 func ErrorCodes() []grpcx.ErrorCode {
@@ -20,6 +21,7 @@ func ErrorCodes() []grpcx.ErrorCode {
 		{Err: domain.ErrAccountNotFound, Code: codes.NotFound},
 		{Err: domain.ErrAccountAlreadyExists, Code: codes.AlreadyExists},
 		{Err: domain.ErrInvalidAccount, Code: codes.InvalidArgument},
+		{Err: xa.ErrInvalidTransactionID, Code: codes.InvalidArgument},
 	}
 }
 
@@ -62,6 +64,31 @@ func (h handler) FindAccountByEmail(ctx context.Context, req *accountinternalapi
 		return nil, err
 	}
 	return toAccountInfo(account), nil
+}
+
+func (h handler) PrepareCreateAccount(ctx context.Context, req *accountinternalapi.PrepareCreateAccountRequest) (*accountinternalapi.PrepareCreateAccountResponse, error) {
+	id, err := grpcx.ParseUUID("AccountID", req.AccountID)
+	if err != nil {
+		return nil, err
+	}
+	err = h.service.PrepareCreateAccount(ctx, app.PrepareCreateAccountInput{
+		TransactionID: req.TransactionID,
+		AccountID:     id,
+		Email:         req.Email,
+		Name:          req.Name,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &accountinternalapi.PrepareCreateAccountResponse{}, nil
+}
+
+func (h handler) CommitTransaction(ctx context.Context, req *accountinternalapi.TransactionRequest) (*accountinternalapi.TransactionResponse, error) {
+	return &accountinternalapi.TransactionResponse{}, h.service.CommitTransaction(ctx, req.TransactionID)
+}
+
+func (h handler) RollbackTransaction(ctx context.Context, req *accountinternalapi.TransactionRequest) (*accountinternalapi.TransactionResponse, error) {
+	return &accountinternalapi.TransactionResponse{}, h.service.RollbackTransaction(ctx, req.TransactionID)
 }
 
 func toAccountInfo(account app.AccountData) *accountinternalapi.AccountInfo {

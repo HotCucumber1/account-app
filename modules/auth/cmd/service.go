@@ -44,7 +44,7 @@ func service(ctx context.Context, logger *slog.Logger, conf config.Env) (err err
 		return err
 	}
 
-	s, conns, err := newServices(ctx, conf, db, dispatcher)
+	s, conns, err := newServices(ctx, logger, conf, db, dispatcher)
 	if err != nil {
 		return err
 	}
@@ -70,6 +70,9 @@ func service(ctx context.Context, logger *slog.Logger, conf config.Env) (err err
 	})
 	errGroup.Go(func() error {
 		return runRelay(egCtx, logger, relay, conf.Relay)
+	})
+	errGroup.Go(func() error {
+		return runRegistrationRecovery(egCtx, logger, s.registration, conf.Registration)
 	})
 	return errGroup.Wait()
 }

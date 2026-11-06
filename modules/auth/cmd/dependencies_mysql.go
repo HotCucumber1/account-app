@@ -15,6 +15,7 @@ import (
 
 type database struct {
 	connector mysql.Connector
+	client    mysql.TransactionalClient
 	unit      uowx.Unit
 }
 
@@ -56,6 +57,7 @@ func openDatabase(ctx context.Context, logger *slog.Logger, conf config.Env) (_ 
 
 	return &database{
 		connector: connector,
+		client:    client,
 		unit:      uowx.NewUnit(mysql.NewConnectionPool(client)),
 	}, nil
 }

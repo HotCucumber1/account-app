@@ -5,7 +5,6 @@ use (
 	./modules/account
 	./modules/audit
 	./modules/auth
-	./modules/billing
 	./modules/notification
 	./modules/session
 	./modules/storage

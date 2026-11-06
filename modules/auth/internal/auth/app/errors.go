@@ -10,4 +10,5 @@ var (
 	ErrInvalidAccount       = errors.New("invalid account data")
 	ErrInvalidToken         = errors.New("access token is invalid")
 	ErrSessionNotFound      = errors.New("session not found")
+	ErrRegistrationAborted  = errors.New("registration aborted by deadline")
 )

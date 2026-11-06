@@ -9,6 +9,10 @@ service AccountService {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse);
   rpc GetAccountInfo(GetAccountInfoRequest) returns (AccountInfo);
   rpc FindAccountByEmail(FindAccountByEmailRequest) returns (AccountInfo);
+
+  rpc PrepareCreateAccount(PrepareCreateAccountRequest) returns (PrepareCreateAccountResponse);
+  rpc CommitTransaction(TransactionRequest) returns (TransactionResponse);
+  rpc RollbackTransaction(TransactionRequest) returns (TransactionResponse);
 }
 
 message AccountInfo {
@@ -34,3 +38,18 @@ message GetAccountInfoRequest {
 message FindAccountByEmailRequest {
   string Email = 1;
 }
+
+message PrepareCreateAccountRequest {
+  string TransactionID = 1;
+  string AccountID = 2;
+  string Email = 3;
+  string Name = 4;
+}
+
+message PrepareCreateAccountResponse {}
+
+message TransactionRequest {
+  string TransactionID = 1;
+}
+
+message TransactionResponse {}
