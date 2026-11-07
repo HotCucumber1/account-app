@@ -18,20 +18,7 @@ const (
 	userAgent    = "Firefox"
 )
 
-var tooLongName = strings.Repeat("x", 256)
-
-func registerWithResponse(t *testing.T, body publicapi.RegisterJSONRequestBody) *publicapi.RegisterResponse {
-	t.Helper()
-	response, err := publicClient(t, userAgent).RegisterWithResponse(t.Context(), body)
-	require.NoError(t, err)
-	return response
-}
-
-func requireAccountNotFound(t *testing.T, email string) {
-	t.Helper()
-	_, err := accountClient(t).FindAccountByEmail(t.Context(), &accountinternalapi.FindAccountByEmailRequest{Email: email})
-	require.Equal(t, codes.NotFound, status.Code(err))
-}
+var tooLongName = strings.Repeat("z", 256)
 
 func TestRegistrationCreatesAccount(t *testing.T) {
 	// Arrange
@@ -130,4 +117,17 @@ func TestRegistrationAfterRollbackSucceeds(t *testing.T) {
 
 	// Assert
 	require.Equal(t, accountID, requireLogin(t, email, password, userAgent).AccountID.String())
+}
+
+func registerWithResponse(t *testing.T, body publicapi.RegisterJSONRequestBody) *publicapi.RegisterResponse {
+	t.Helper()
+	response, err := publicClient(t, userAgent).RegisterWithResponse(t.Context(), body)
+	require.NoError(t, err)
+	return response
+}
+
+func requireAccountNotFound(t *testing.T, email string) {
+	t.Helper()
+	_, err := accountClient(t).FindAccountByEmail(t.Context(), &accountinternalapi.FindAccountByEmailRequest{Email: email})
+	require.Equal(t, codes.NotFound, status.Code(err))
 }
