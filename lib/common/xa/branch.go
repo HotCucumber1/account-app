@@ -11,6 +11,12 @@ import (
 	pkgerrors "github.com/pkg/errors"
 )
 
+type TransactionBranches interface {
+	Prepare(ctx context.Context, transactionID string, action func(ctx context.Context) error) error
+	Commit(ctx context.Context, transactionID string) error
+	Rollback(ctx context.Context, transactionID string) error
+}
+
 const errUnknownXID = 1397
 
 var (

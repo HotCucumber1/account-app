@@ -11,7 +11,12 @@ import (
 	"auth/internal/auth/config"
 )
 
-func runRegistrationRecovery(ctx context.Context, logger *slog.Logger, coordinator *appservice.RegistrationCoordinator, conf config.Registration) error {
+func runRegistrationRecovery(
+	ctx context.Context,
+	logger *slog.Logger,
+	coordinator *appservice.RegistrationCoordinator,
+	conf config.Registration,
+) error {
 	ticker := time.NewTicker(conf.RecoveryInterval)
 	defer ticker.Stop()
 

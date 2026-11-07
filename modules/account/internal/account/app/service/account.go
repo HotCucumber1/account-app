@@ -6,21 +6,17 @@ import (
 	"account/internal/account/app"
 	"account/internal/account/domain/model"
 	domainservice "account/internal/account/domain/service"
-)
 
-type TransactionBranches interface {
-	Prepare(ctx context.Context, transactionID string, action func(ctx context.Context) error) error
-	Commit(ctx context.Context, transactionID string) error
-	Rollback(ctx context.Context, transactionID string) error
-}
+	"github.com/distributed-programming-2026/lib/common/xa"
+)
 
 type AccountService struct {
 	unitOfWork UnitOfWork
-	branches   TransactionBranches
+	branches   xa.TransactionBranches
 	service    *domainservice.AccountService
 }
 
-func NewAccountService(unitOfWork UnitOfWork, branches TransactionBranches, service *domainservice.AccountService) *AccountService {
+func NewAccountService(unitOfWork UnitOfWork, branches xa.TransactionBranches, service *domainservice.AccountService) *AccountService {
 	return &AccountService{
 		unitOfWork: unitOfWork,
 		branches:   branches,

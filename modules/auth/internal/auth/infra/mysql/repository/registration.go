@@ -74,7 +74,12 @@ func (r *registrationRepository) FindUnfinished(ctx context.Context, limit int) 
 func (r *registrationRepository) UpdateStatus(ctx context.Context, transactionID string, from, to model.RegistrationStatus) (bool, error) {
 	return uowx.Query(ctx, r.unitOfWork, func(client mysql.ClientContext) (bool, error) {
 		result, err := client.ExecContext(ctx, "registration.update-status", `
-			UPDATE registration_transaction SET status = ?, updated_at = ? WHERE transaction_id = ? AND status = ?
+			UPDATE registration_transaction 
+			SET 
+			    status = ?, 
+			    updated_at = ?
+			WHERE 
+			    transaction_id = ? AND status = ?
 			`,
 			string(to),
 			time.Now().UTC(),

@@ -13,7 +13,8 @@ import (
 	appquery "account/internal/account/app/query"
 	appservice "account/internal/account/app/service"
 	"account/internal/account/domain"
-	"account/internal/account/infra/mysql/xa"
+
+	"github.com/distributed-programming-2026/lib/common/xa"
 )
 
 func ErrorCodes() []grpcx.ErrorCode {

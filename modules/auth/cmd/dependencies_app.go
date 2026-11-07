@@ -16,10 +16,11 @@ import (
 	"auth/internal/auth/infra/account"
 	infraevent "auth/internal/auth/infra/event"
 	"auth/internal/auth/infra/mysql/repository"
-	"auth/internal/auth/infra/mysql/xa"
 	"auth/internal/auth/infra/password"
 	"auth/internal/auth/infra/session"
 	"auth/internal/auth/infra/token"
+
+	"github.com/distributed-programming-2026/lib/common/xa"
 )
 
 type services struct {

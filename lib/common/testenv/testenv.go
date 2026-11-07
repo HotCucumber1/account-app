@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 	"time"
 
@@ -59,6 +60,7 @@ type Environment struct {
 // Start launches infrastructure and modules. Message handlers of every module start before
 // any service, so no event published by a service is lost before its consumer queue exists.
 func Start(ctx context.Context, modules ...Module) (*Environment, error) {
+	_ = os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	e := &Environment{apps: make(map[string]*App, len(modules))}
 	err := e.start(ctx, modules)
 	if err != nil {

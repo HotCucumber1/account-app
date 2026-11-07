@@ -12,7 +12,8 @@ import (
 	domainevent "github.com/distributed-programming-2026/lib/event"
 
 	"auth/internal/auth/config"
-	"auth/internal/auth/infra/mysql/xa"
+
+	"github.com/distributed-programming-2026/lib/common/xa"
 )
 
 func newDispatcher(logger *slog.Logger, conf config.Env, db *database, connection amqp.Connection) (event.Dispatcher, *outbox.Relay, error) {

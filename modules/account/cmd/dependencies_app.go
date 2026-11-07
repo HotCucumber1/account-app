@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/distributed-programming-2026/go-sdk/pkg/event"
+	"github.com/distributed-programming-2026/lib/common/xa"
 
 	"github.com/distributed-programming-2026/lib/common/uowx"
 
@@ -11,7 +12,6 @@ import (
 	infraevent "account/internal/account/infra/event"
 	"account/internal/account/infra/mysql/query"
 	"account/internal/account/infra/mysql/repository"
-	"account/internal/account/infra/mysql/xa"
 )
 
 type services struct {

@@ -60,7 +60,7 @@ func TestCreateAndValidateSession(t *testing.T) {
 	require.Equal(t, codes.InvalidArgument, status.Code(err))
 }
 
-func TestKillSessions(t *testing.T) {
+func TestRevokeSessions(t *testing.T) {
 	// Arrange
 	accountID := newAccountID()
 	current := createSession(t, accountID, "Firefox")

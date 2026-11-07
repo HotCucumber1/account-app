@@ -5,20 +5,16 @@ import (
 
 	"auth/internal/auth/app"
 	domainservice "auth/internal/auth/domain/service"
+
+	"github.com/distributed-programming-2026/lib/common/xa"
 )
 
-type TransactionBranches interface {
-	Prepare(ctx context.Context, transactionID string, action func(ctx context.Context) error) error
-	Commit(ctx context.Context, transactionID string) error
-	Rollback(ctx context.Context, transactionID string) error
-}
-
 type CredentialParticipant struct {
-	branches TransactionBranches
+	branches xa.TransactionBranches
 	service  domainservice.AuthService
 }
 
-func NewCredentialParticipant(branches TransactionBranches, service domainservice.AuthService) *CredentialParticipant {
+func NewCredentialParticipant(branches xa.TransactionBranches, service domainservice.AuthService) *CredentialParticipant {
 	return &CredentialParticipant{
 		branches: branches,
 		service:  service,

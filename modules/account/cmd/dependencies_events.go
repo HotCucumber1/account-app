@@ -9,10 +9,10 @@ import (
 	"github.com/distributed-programming-2026/go-sdk/pkg/event/outbox"
 	"github.com/distributed-programming-2026/go-sdk/pkg/uow"
 
+	"github.com/distributed-programming-2026/lib/common/xa"
 	domainevent "github.com/distributed-programming-2026/lib/event"
 
 	"account/internal/account/config"
-	"account/internal/account/infra/mysql/xa"
 )
 
 func newDispatcher(logger *slog.Logger, conf config.Env, db *database, connection amqp.Connection) (event.Dispatcher, *outbox.Relay, error) {

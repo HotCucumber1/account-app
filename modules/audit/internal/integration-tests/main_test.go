@@ -64,6 +64,7 @@ func runTests(m *testing.M) (exitCode int) {
 }
 
 func (e *environment) prepare(ctx context.Context) error {
+	_ = os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true")
 	err := envconfig.Process("integration_defaults", &e.conf)
 	if err != nil {
 		return err
